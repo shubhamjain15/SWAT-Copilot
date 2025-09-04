@@ -1,0 +1,21 @@
+﻿{
+ "name": "SWAT-Copilot",
+ "build": { "dockerfile": "Dockerfile" },
+ "workspaceFolder": "/workspaces/SWAT-Copilot",
+ "customizations": {
+   "vscode": {
+     "extensions": [
+       "ms-python.python",
+       "ms-python.vscode-pylance",
+       "ms-toolsai.jupyter",
+       "charliermarsh.ruff",
+       "ms-azuretools.vscode-docker"
+     ]
+   }
+ },
+ "postCreateCommand": "pre-commit install",
+ "mounts": [
+   "source=${localWorkspaceFolder}/,target=/workspaces/SWAT-Copilot,type=bind"
+ ],
+ "remoteEnv": { "PYTHONPATH": "/workspaces/SWAT-Copilot/src" }
+}

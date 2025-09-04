@@ -1,2 +1,6 @@
-# SWAT-Copilot
-An interactive Model Context Protocol for the Soil &amp; Water Assessment Tool (SWAT) that integrates LLMs to query projects, analyze outputs, and generate plots. 
+﻿# SWAT-Copilot
+LLM-assisted exploration, QA, and visualization for SWAT projects.
+## Quickstart
+- Open in VS Code → Dev Containers → Reopen in Container
+- Run: `uvicorn swat_copilot.api.main:app --reload`
+- Or CLI: `python -m swat_copilot.cli --help`

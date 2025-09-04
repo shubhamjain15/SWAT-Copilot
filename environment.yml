@@ -1,0 +1,35 @@
+﻿name: swat-copilot
+channels:
+ - conda-forge
+dependencies:
+ - python=3.11
+ - pip
+ # geo / data
+ - geopandas
+ - rasterio
+ - rioxarray
+ - xarray
+ - pyproj
+ - shapely
+ - fiona
+ - gdal
+ - numpy
+ - pandas
+ - h5py
+ # api/cli
+ - fastapi
+ - uvicorn
+ - typer
+ - rich
+ - pydantic
+ # viz
+ - matplotlib
+ - plotly
+ # dev
+ - pre-commit
+ - ruff
+ - black
+ - mypy
+ - pytest
+ - pip:
+     - fastembed

@@ -1,0 +1,17 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.build/
+dist/
+.cache/
+.mypy_cache/
+.pytest_cache/
+# Project
+data/
+.env
+*.sqlite
+.DS_Store
+# VS Code
+.vscode/
