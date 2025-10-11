@@ -1,15 +1,15 @@
-﻿services:
- api:
-   image: swat-copilot:latest
-   build:
-     context: .
-     dockerfile: .devcontainer/Dockerfile
-   container_name: swat-copilot-api
-   command: uvicorn swat_copilot.api.main:app --host 0.0.0.0 --port 8000 --reload
-   env_file: .env
-   volumes:
-     - ./:/workspaces/SWAT-Copilot
-     - ./data:/workspaces/SWAT-Copilot/data
-     - ${SWAT_PROJECT_DIR:-./_example_swat}:/workspaces/SWAT-Project:ro
-   ports:
-     - "8000:8000"
+services:
+  api:
+    image: swat-copilot:latest
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: swat-copilot-api
+    command: uvicorn swat_copilot.api.app:create_app --factory --host 0.0.0.0 --port 8000 --reload
+    env_file: .env
+    volumes:
+      - ./:/workspaces/SWAT-Copilot
+      - ./data:/workspaces/SWAT-Copilot/data
+      - ${SWAT_PROJECT_DIR:-./_example_swat}:/workspaces/SWAT-Project:ro
+    ports:
+      - "8000:8000"

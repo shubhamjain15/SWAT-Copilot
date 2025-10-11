@@ -1,19 +1,23 @@
-﻿[build-system]
+[build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
+
 [project]
 name = "swat-copilot"
 version = "0.0.1"
 requires-python = ">=3.11"
 description = "Copilot to explore, query, and visualize SWAT projects with LLM help."
 readme = "README.md"
+
 [tool.ruff]
 line-length = 100
 extend-select = ["I"]
 target-version = "py311"
+
 [tool.black]
 line-length = 100
 target-version = ["py311"]
+
 [tool.mypy]
 python_version = "3.11"
 strict = true

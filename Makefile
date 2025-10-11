@@ -1,13 +1,18 @@
-﻿.PHONY: dev api test fmt lint
+.PHONY: dev api test fmt lint
+
 dev:
-docker compose up --build
+	docker compose up --build
+
 api:
-uvicorn swat_copilot.api.main:app --reload
+	uvicorn swat_copilot.api.app:create_app --factory --reload
+
 test:
-pytest -q
+	pytest -q
+
 fmt:
-ruff check --fix .
-black .
+	ruff check --fix .
+	black .
+
 lint:
-ruff check .
-mypy src
+	ruff check .
+	mypy src
