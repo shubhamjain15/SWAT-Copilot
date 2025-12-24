@@ -1,4 +1,6 @@
-"""LLM prompt orchestration."""
-from .prompts import SYSTEM_PROMPT
+"""LLM integration modules."""
 
-__all__ = ["SYSTEM_PROMPT"]
+from swat_copilot.llm.prompts import PromptTemplates
+from swat_copilot.llm.rag import SWATRAGSystem
+
+__all__ = ["PromptTemplates", "SWATRAGSystem"]

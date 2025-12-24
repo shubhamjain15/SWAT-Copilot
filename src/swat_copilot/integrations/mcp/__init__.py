@@ -1,4 +1,5 @@
-"""MCP integration scaffolding."""
-from .server_stub import __doc__ as server_description
+"""Model Context Protocol (MCP) server for SWAT-Copilot."""
 
-__all__ = ["server_description"]
+from swat_copilot.integrations.mcp.server import SWATMCPServer
+
+__all__ = ["SWATMCPServer"]

@@ -1,4 +1,15 @@
-"""Core domain objects for SWAT-Copilot."""
-from .projects import SWATProject
+"""Core domain models for SWAT projects."""
 
-__all__ = ["SWATProject"]
+from swat_copilot.core.projects import (
+    SWATProject,
+    SWATProjectLocator,
+    SWATFile,
+    SWATFileType,
+)
+
+__all__ = [
+    "SWATProject",
+    "SWATProjectLocator",
+    "SWATFile",
+    "SWATFileType",
+]

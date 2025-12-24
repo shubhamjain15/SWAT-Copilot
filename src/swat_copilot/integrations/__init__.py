@@ -1,4 +1,3 @@
-"""Integration touchpoints for external systems."""
-from . import mcp
+"""External integrations for SWAT-Copilot."""
 
-__all__ = ["mcp"]
+__all__ = []

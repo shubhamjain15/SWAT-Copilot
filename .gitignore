@@ -1,17 +1,64 @@
 ﻿# Python
 __pycache__/
 *.py[cod]
-*.egg-info/
-*.egg
-.build/
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
 dist/
-.cache/
-.mypy_cache/
-.pytest_cache/
-# Project
-data/
-.env
-*.sqlite
-.DS_Store
-# VS Code
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.output
+*.tmp
+data/raw/
+data/processed/
+outputs/
+plots/
+*.sqlite
+
+# Jupyter
+.ipynb_checkpoints/

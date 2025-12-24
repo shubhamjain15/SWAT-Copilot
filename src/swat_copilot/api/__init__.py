@@ -1,4 +1,5 @@
-"""API package exports."""
-from .app import app, create_app
+"""FastAPI application for SWAT-Copilot REST API."""
 
-__all__ = ["app", "create_app"]
+from swat_copilot.api.app import create_app
+
+__all__ = ["create_app"]

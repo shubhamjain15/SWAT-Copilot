@@ -1,4 +1,5 @@
-"""Visualization utilities."""
-from .plots import plot_sub_area_hist
+"""Visualization tools for SWAT model data."""
 
-__all__ = ["plot_sub_area_hist"]
+from swat_copilot.visualization.plots import SWATPlotter
+
+__all__ = ["SWATPlotter"]

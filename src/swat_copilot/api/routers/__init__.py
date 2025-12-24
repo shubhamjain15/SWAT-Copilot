@@ -1,4 +1,3 @@
-"""Router collection for the public API."""
-from . import health, summary
+"""API route handlers."""
 
-__all__ = ["health", "summary"]
+__all__ = []

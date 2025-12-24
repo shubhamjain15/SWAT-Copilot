@@ -1,4 +1,5 @@
-"""Top-level package for SWAT-Copilot."""
+"""SWAT-Copilot: LLM-assisted exploration, QA, and visualization for SWAT projects."""
+
+__version__ = "0.0.1"
 
 __all__ = ["__version__"]
-__version__ = "0.0.1"
