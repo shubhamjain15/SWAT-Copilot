@@ -1,6 +1,6 @@
 # SWAT-Copilot
 
-LLM-assisted exploration, QA, and visualization for SWAT projects.
+LLM-assisted exploration, QA, and visualization for SWAT/HAWQS projects. Visit https://hawqs.tamu.edu/#/ to create a new project and download the SWAT model for your watershed.
 
 ## Project Status
 
