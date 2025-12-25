@@ -1,7 +1,17 @@
 """RAG (Retrieval Augmented Generation) system for SWAT documentation."""
 
+import logging
 from pathlib import Path
 from typing import Optional, Any
+
+logger = logging.getLogger(__name__)
+
+try:
+    from swat_copilot.llm.doc_indexer import SWATDocumentationIndex
+    INDEXER_AVAILABLE = True
+except ImportError:
+    INDEXER_AVAILABLE = False
+    logger.warning("Documentation indexer not available. Install dependencies.")
 
 
 class SWATRAGSystem:
@@ -18,7 +28,7 @@ class SWATRAGSystem:
     def __init__(
         self,
         documentation_path: Optional[Path] = None,
-        embedding_model: str = "text-embedding-3-small",
+        embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2",
     ) -> None:
         """
         Initialize RAG system.
@@ -30,24 +40,37 @@ class SWATRAGSystem:
         self.documentation_path = documentation_path
         self.embedding_model = embedding_model
         self._index_built = False
+        self.indexer: Optional[SWATDocumentationIndex] = None
+
+        if documentation_path and INDEXER_AVAILABLE:
+            self.indexer = SWATDocumentationIndex(documentation_path)
 
     def build_index(self) -> None:
         """
         Build vector index from SWAT documentation.
 
-        This would:
-        1. Load documentation files
+        This will:
+        1. Load PDF and text files
         2. Chunk text into segments
         3. Generate embeddings
-        4. Store in vector database (e.g., FAISS, Chroma)
+        4. Store in Chroma vector database
         """
-        # Skeleton implementation
-        self._index_built = True
+        if not self.indexer:
+            logger.warning("Indexer not available")
+            return
+
+        try:
+            self.indexer.build_index()
+            self._index_built = True
+            logger.info("Documentation index built successfully")
+        except Exception as e:
+            logger.error(f"Failed to build index: {e}")
+            self._index_built = False
 
     def retrieve_context(
         self,
         query: str,
-        top_k: int = 5,
+        top_k: int = 3,
     ) -> list[dict[str, Any]]:
         """
         Retrieve relevant documentation context for a query.
@@ -59,22 +82,31 @@ class SWATRAGSystem:
         Returns:
             List of relevant documentation chunks
         """
-        if not self._index_built:
+        if not self.indexer:
+            logger.warning("Indexer not available")
             return []
 
-        # Skeleton implementation
-        # In production, this would:
-        # 1. Embed the query
-        # 2. Search vector database
-        # 3. Return top_k most relevant chunks
+        if not self._index_built:
+            # Try to load existing index
+            if self.indexer.load_index():
+                self._index_built = True
+            else:
+                logger.warning("No index available. Run build_index() first.")
+                return []
 
-        return [
-            {
-                "text": "Sample SWAT documentation context",
-                "source": "SWAT Manual Chapter 5",
-                "relevance_score": 0.85,
-            }
-        ]
+        try:
+            results = self.indexer.search(query, top_k=top_k)
+            return [
+                {
+                    "text": r["content"],
+                    "source": r["source"],
+                    "page": r.get("page", ""),
+                }
+                for r in results
+            ]
+        except Exception as e:
+            logger.error(f"Search failed: {e}")
+            return []
 
     def get_variable_documentation(self, variable_name: str) -> Optional[str]:
         """

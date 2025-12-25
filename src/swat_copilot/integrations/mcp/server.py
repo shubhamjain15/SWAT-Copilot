@@ -1,6 +1,7 @@
 """MCP Server implementation for SWAT model interaction."""
 
 import logging
+import os
 from pathlib import Path
 from typing import Any, Optional
 
@@ -14,6 +15,12 @@ from swat_copilot.services.project_manager import ProjectManager
 from swat_copilot.services.summary import SummarizeService
 from swat_copilot.services.analysis import AnalysisService
 from swat_copilot.visualization.plots import SWATPlotter
+
+try:
+    from swat_copilot.llm.rag import SWATRAGSystem
+    RAG_AVAILABLE = True
+except ImportError:
+    RAG_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +41,22 @@ class SWATMCPServer:
         self.settings = get_settings()
         self.server = Server(self.settings.mcp_server_name)
         self.project_manager = ProjectManager()
+
+        # Initialize RAG system if documentation path is provided
+        self.rag_system: Optional[SWATRAGSystem] = None
+        if RAG_AVAILABLE:
+            docs_path_str = os.environ.get("SWAT_DOCS_PATH")
+            if docs_path_str:
+                docs_path = Path(docs_path_str)
+                if docs_path.exists():
+                    try:
+                        self.rag_system = SWATRAGSystem(documentation_path=docs_path)
+                        logger.info(f"Documentation search enabled: {docs_path}")
+                    except Exception as e:
+                        logger.warning(f"Failed to initialize documentation search: {e}")
+                else:
+                    logger.warning(f"Documentation path does not exist: {docs_path}")
+
         self._setup_handlers()
 
     def _setup_handlers(self) -> None:
@@ -242,6 +265,27 @@ class SWATMCPServer:
                         "required": ["variables"],
                     },
                 ),
+                Tool(
+                    name="search_documentation",
+                    description="Search SWAT documentation for information about parameters, variables, or concepts. Returns relevant excerpts from SWAT manuals and documentation.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": "Search query (e.g., 'CN2 parameter', 'surface runoff calculation', 'output.rch variables')",
+                            },
+                            "top_k": {
+                                "type": "integer",
+                                "description": "Number of results to return (default: 3)",
+                                "default": 3,
+                                "minimum": 1,
+                                "maximum": 10,
+                            },
+                        },
+                        "required": ["query"],
+                    },
+                ),
             ]
 
         @self.server.call_tool()
@@ -268,6 +312,8 @@ class SWATMCPServer:
                     return await self._plot_time_series(arguments)
                 elif name == "plot_comparison":
                     return await self._plot_comparison(arguments)
+                elif name == "search_documentation":
+                    return await self._search_documentation(arguments)
                 else:
                     raise ValueError(f"Unknown tool: {name}")
 
@@ -396,6 +442,44 @@ class SWATMCPServer:
         )
 
         return [ImageContent(type="image", data=image_data, mimeType="image/png")]
+
+    async def _search_documentation(self, arguments: dict[str, Any]) -> list[TextContent]:
+        """Search SWAT documentation."""
+        if not self.rag_system:
+            return [TextContent(
+                type="text",
+                text="Documentation search not available. Please set SWAT_DOCS_PATH environment variable and ensure documentation index is built."
+            )]
+
+        query = arguments["query"]
+        top_k = arguments.get("top_k", 3)
+
+        # Retrieve relevant documentation
+        results = self.rag_system.retrieve_context(query, top_k=top_k)
+
+        if not results:
+            return [TextContent(
+                type="text",
+                text=f"No documentation found for query: '{query}'"
+            )]
+
+        # Format results
+        response = f"# Documentation Search Results for: '{query}'\n\n"
+        response += f"Found {len(results)} relevant excerpt(s):\n\n"
+
+        for i, result in enumerate(results, 1):
+            source_file = Path(result["source"]).name
+            page = result.get("page", "N/A")
+            text = result["text"]
+
+            response += f"## Result {i}\n"
+            response += f"**Source:** {source_file}\n"
+            if page and page != "N/A":
+                response += f"**Page:** {page}\n"
+            response += f"\n{text}\n\n"
+            response += "-" * 80 + "\n\n"
+
+        return [TextContent(type="text", text=response)]
 
     async def _read_project_resource(self) -> str:
         """Read project resource."""

@@ -40,7 +40,9 @@ python -m swat_copilot.integrations.mcp
 
 #### With Claude Desktop
 
-Add to your Claude Desktop MCP configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Add to your Claude Desktop MCP configuration:
+- **macOS/Linux:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -49,12 +51,15 @@ Add to your Claude Desktop MCP configuration (`~/Library/Application Support/Cla
       "command": "python",
       "args": ["-m", "swat_copilot.integrations.mcp"],
       "env": {
-        "DEFAULT_SWAT_PROJECT_PATH": "/path/to/your/swat/projects"
+        "DEFAULT_SWAT_PROJECT_PATH": "/path/to/your/swat/projects",
+        "SWAT_DOCS_PATH": "/path/to/SWAT-Copilot/docs/swat_documentation"
       }
     }
   }
 }
 ```
+
+**Note:** Set `SWAT_DOCS_PATH` to enable documentation search. See [Documentation Setup](QUICK_SETUP_DOCS.md) for details.
 
 ## Available Tools
 
@@ -157,6 +162,27 @@ Create comparison plot for multiple variables.
 
 **Returns:** Base64-encoded PNG image
 
+### Documentation Search
+
+#### `search_documentation`
+Search SWAT documentation for information about parameters, variables, or concepts.
+
+**Parameters:**
+- `query` (string, required): Search query (e.g., "CN2 parameter", "surface runoff calculation")
+- `top_k` (integer): Number of results to return (default: 3, max: 10)
+
+**Returns:** Relevant excerpts from SWAT manuals with source citations
+
+**Example:**
+```json
+{
+  "query": "What is the CN2 parameter?",
+  "top_k": 3
+}
+```
+
+**Note:** Requires `SWAT_DOCS_PATH` environment variable to be set and documentation index to be built. See [Documentation Setup](QUICK_SETUP_DOCS.md).
+
 ## Resources
 
 The server exposes SWAT project data as MCP resources:
@@ -216,6 +242,19 @@ Using tool: plot_time_series
   "title": "Streamflow at Reach 5"
 }
 ```
+
+**User:** "What does the CN2 parameter control in SWAT?"
+
+**AI with MCP:**
+```
+Using tool: search_documentation
+{
+  "query": "CN2 parameter",
+  "top_k": 3
+}
+```
+
+Returns documentation excerpts explaining that CN2 is the SCS runoff curve number for moisture condition II, with details on its range (35-98) and impact on surface runoff generation.
 
 ## Development
 
@@ -341,4 +380,6 @@ Future enhancements:
 - [ ] Parameter sensitivity analysis
 - [ ] Batch processing capabilities
 - [ ] Integration with SWAT+ models
-- [ ] Enhanced RAG with SWAT documentation
+- [x] Enhanced RAG with SWAT documentation - **COMPLETED**
+- [ ] Multi-document search across research papers
+- [ ] Citation and reference tracking
